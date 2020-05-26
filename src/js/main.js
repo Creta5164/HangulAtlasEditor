@@ -10,127 +10,183 @@ let HangulAtlasEditor = null;
     HangulAtlasEditor.UNICODE_CONSTANT_START = 0x3131;
     HangulAtlasEditor.UNICODE_VOWEL_START    = 0x314F;
     
+    HangulAtlasEditor.UNICODE_HEAD_RANGE     = 0x024C;
+    HangulAtlasEditor.UNICODE_HEADS = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
+    
+    HangulAtlasEditor.UNICODE_BODY_RANGE     = 0x001C;
+    HangulAtlasEditor.UNICODE_BODIES = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";
+    
+    HangulAtlasEditor.UNICODE_TAILS = "ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ";
+    
     HangulAtlasEditor.DKB_HORIZONTAL_LINE = 27;
     HangulAtlasEditor.DKB_VERTICAL_LINE   = 16;
     
     HangulAtlasEditor.DKB_TABLE = {
         
-        OFFSET: {
-            HEAD: 0,
-            HEADTAIL: 5,
-            BODY: 8,
-            BODYTAIL: 10,
-            TAIL: 12
+        WITHOUT_TAIL: {
+            
+            HEAD: {
+                LINE_OFFSET: 0,
+                CHARSET: [
+                    "ㅏㅐㅑㅒㅓㅔㅕㅖㅣ",
+                    "ㅗㅛㅡ",
+                    "ㅜㅠ",
+                    "ㅘㅙㅚㅢ",
+                    "ㅝㅞㅟ"
+                ]
+            },
+            
+            BODY: {
+                LINE_OFFSET: 8,
+                CHARSET: [
+                    "ㄱㅋ",
+                    "ㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅌㅍㅎ"
+                ]
+            }
         },
         
-        CHARSET: [
-            "ㅏㅐㅑㅒㅓㅔㅕㅖㅣ",
-            "ㅗㅛㅡ",
-            "ㅜㅠ",
-            "ㅘㅙㅚㅢ",
-            "ㅝㅞㅟ",
+        WITH_TAIL: {
             
-            "ㅏㅐㅑㅒㅓㅔㅕㅖㅣ",
-            "ㅗㅛㅜㅠㅡ",
-            "ㅘㅙㅚㅢㅝㅞㅟ",
+            HEAD: {
+                LINE_OFFSET: 5,
+                CHARSET: [
+                    "ㅏㅐㅑㅒㅓㅔㅕㅖㅣ",
+                    "ㅗㅛㅜㅠㅡ",
+                    "ㅘㅙㅚㅢㅝㅞㅟ"
+                ]
+            },
             
-            "ㄱㅋ",
-            "ㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅌㅍㅎ",
+            BODY: {
+                LINE_OFFSET: 10,
+                CHARSET: [
+                    "ㄱㅋ",
+                    "ㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅌㅍㅎ"
+                ]
+            },
             
-            "ㄱㅋ",
-            "ㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅌㅍㅎ",
-            
-            "ㅏㅑㅘ",
-            "ㅓㅕㅚㅝㅟㅢㅣ",
-            "ㅐㅒㅔㅖㅙㅞ",
-            "ㅗㅛㅜㅠㅡ"
-        ]
+            TAIL: {
+                LINE_OFFSET: 12,
+                CHARSET: [
+                    "ㅏㅑㅘ",
+                    "ㅓㅕㅚㅝㅟㅢㅣ",
+                    "ㅐㅒㅔㅖㅙㅞ",
+                    "ㅗㅛㅜㅠㅡ"
+                ]
+            }
+        }
     };
-    
-    /* HangulAtlasEditor.DKB_HEAD_TABLE = {
-        LINE_OFFSET:  0,
-        CHARSET: [
-            "ㅏㅐㅑㅒㅓㅔㅕㅖㅣ",
-            "ㅗㅛㅡ",
-            "ㅜㅠ",
-            "ㅘㅙㅚㅢ",
-            "ㅝㅞㅟ"
-        ]
-    };
-    
-    HangulAtlasEditor.DKB_HEADTAIL_TABLE = {
-        LINE_OFFSET:  5,
-        CHARSET: [
-            "ㅏㅐㅑㅒㅓㅔㅕㅖㅣ",
-            "ㅗㅛㅜㅠㅡ",
-            "ㅘㅙㅚㅢㅝㅞㅟ"
-        ]
-    };
-    
-    HangulAtlasEditor.DKB_BODY_TABLE = {
-        LINE_OFFSET:  8,
-        CHARSET: [
-            "ㄱㅋ",
-            "ㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅌㅍㅎ"
-        ]
-    };
-    
-    HangulAtlasEditor.DKB_BODYTAIL_TABLE = {
-        LINE_OFFSET:  10,
-        CHARSET: [
-            "ㄱㅋ",
-            "ㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅌㅍㅎ"
-        ]
-    };
-    
-    HangulAtlasEditor.DKB_TAIL_TABLE = {
-        LINE_OFFSET:  12,
-        CHARSET: [
-            "ㅏㅑㅘ",
-            "ㅓㅕㅚㅝㅟㅢㅣ",
-            "ㅐㅒㅔㅖㅙㅞ",
-            "ㅗㅛㅜㅠㅡ"
-        ]
-    }; */
     
     HangulAtlasEditor.Initialize = function(timeout) {
         
         if (typeof PIXI === 'undefined') {
             
-            alert('하나 이상의 종속성 패키지가 준비시간을 초과하여 불러오지 못했습니다.');
+            alert('하나 이상의 종속성 패키지를 불러오지 못했습니다.');
             return;
         }
         
+        this.IsDKBSpriteLoaded = false;
+        
         this.Views = {};
         this.Views.FontAtlasPreview = new CanvasView(2048, 2048);
-        this.Views.DKBAtlasPreview  = new CanvasView();
+        this.Views.DKBAtlasPreview  = new CanvasView(2048, 2048);
+    };
+    
+    HangulAtlasEditor.GetGlyph = function(glyph) {
         
-        //var char, charOffset, result = '';
-        //for (var i = 0; i < HangulAtlasEditor.DKB_TABLE.CHARSET.length; i++) {
-        //    
-        //    char = HangulAtlasEditor.DKB_TABLE.CHARSET[i];
-        //    charOffset = char.charCodeAt(0) - 0x314f;
-        //    
-        //    //for (var j = 0; j < len; j++)
-        //    //    result += String.fromCharCode(0xac00 + charOffset) + ' ';
-        //    
-        //    result += charOffset + ' ';
-        //}
-        //
-        //console.log(result);
+        var code = glyph.charCodeAt(0) - this.UNICODE_START;
+        
+        var head = Math.floor(code / (this.UNICODE_HEAD_RANGE));
+        var body = Math.floor(code / (this.UNICODE_BODY_RANGE) % HangulAtlasEditor.UNICODE_BODIES.length);
+        var tail = code % this.UNICODE_BODY_RANGE;
+        
+        if (tail === 0)
+            return [head, body];
+        
+        tail -= 1;
+        
+        return [head, body, tail];
+    };
+    
+    HangulAtlasEditor.GetGlyphString = function(glyph) {
+        
+        return this.ToGlyphString(this.GetGlyph(glyph));
+    };
+    
+    HangulAtlasEditor.ToGlyphString = function(glyph) {
+        
+        if (glyph.length === 2)
+            return [
+                this.UNICODE_HEADS.charAt(glyph[0]),
+                this.UNICODE_BODIES.charAt(glyph[1])
+            ];
+        
+        else if (glyph.length === 3)
+            return [
+                this.UNICODE_HEADS.charAt(glyph[0]),
+                this.UNICODE_BODIES.charAt(glyph[1]),
+                this.UNICODE_TAILS.charAt(glyph[2])
+            ];
     };
     
     HangulAtlasEditor.DrawGlyph = function(target, x, y, glyph) {
         
-        var code = glyph.charCodeAt(0) - this.UNICODE_START;
+        if (!this.IsDKBSpriteLoaded)
+            return;
         
-        var head = Math.floor(code / (21 * 28)      + this.UNICODE_CONSTANT_START);
-        var body = Math.floor(code % (21 * 28) / 28 + this.UNICODE_VOWEL_START);
-        var tail = Math.floor(code % (21 * 28) % 28);
+        glyph = this.GetGlyph(glyph);
+        var glyphString = this.ToGlyphString(glyph);
         
-        console.log(String.fromCharCode(head));
-        console.log(String.fromCharCode(body));
-        console.log(tail >= 0 ? String.fromCharCode(tail + this.UNICODE_CONSTANT_START) : '-');
+        var atlasData = this.GetDKBAtlasData(glyph, glyphString);
+        
+        console.log(atlasData);
+    };
+    
+    HangulAtlasEditor.GetDKBAtlasData = function(glyphData, glyphStringData) {
+        
+        console.log(glyphData);
+        console.log(glyphStringData);
+        
+        var head, body, tail;
+        
+        if (glyphData.length === 2) {
+            
+            //받침 종성이 없는 경우
+            
+            head = this.GetDKBLine(this.DKB_TABLE.WITHOUT_TAIL.HEAD, glyphStringData[1]);
+            body = this.GetDKBLine(this.DKB_TABLE.WITHOUT_TAIL.BODY, glyphStringData[0]);
+            
+            console.log(`${head}:${glyphData[0]} (${glyphStringData[0]}), ${body}:${glyphData[1]} (${glyphStringData[1]})`);
+            return [[head, glyphData[0]], [body, glyphData[1]]];
+            
+        } else if (glyphData.length === 3) {
+            
+            //받침 종성이 있는 경우
+            
+            head = this.GetDKBLine(this.DKB_TABLE.WITH_TAIL.HEAD, glyphStringData[1]);
+            body = this.GetDKBLine(this.DKB_TABLE.WITH_TAIL.BODY, glyphStringData[0]);
+            tail = this.GetDKBLine(this.DKB_TABLE.WITH_TAIL.TAIL, glyphStringData[1]);
+            
+            console.log(`${head}:${glyphData[0]} (${glyphStringData[0]}), ${body}:${glyphData[1]} (${glyphStringData[1]}), ${tail}:${glyphData[2]} (${glyphStringData[2]})`);
+            return [[head, glyphData[0]], [body, glyphData[1]], [tail, glyphData[2]]];
+        }
+        
+    };
+    
+    HangulAtlasEditor.GetDKBLine = function(bulset, glyphPart) {
+        
+        var charset = bulset.CHARSET;
+        var index;
+        
+        for (index = 0; index < charset.length; index++) {
+            
+            if (charset[index].indexOf(glyphPart) !== -1) {
+                
+                index += bulset.LINE_OFFSET;
+                break;
+            }
+        }
+        
+        return index;
     };
     
     HangulAtlasEditor.GenerateFnt = function() {

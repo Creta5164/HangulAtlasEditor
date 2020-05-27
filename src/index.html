@@ -4,11 +4,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>한글 조합형 아틀라스 에디터</title>
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.2.4/pixi.min.js"></script>
-        <script src="./js/main.js"></script>
     </head>
-    <body>
+    <body style="background:black; color:white">
         
         <div class="header">
             
@@ -18,7 +15,25 @@
             
             <div id="View_Main">
                 
-                <canvas id="TextureView"></canvas>
+                <p>
+                    <input type="file" id="DKBAtlasInput" accept=".png"/>
+                    <input type="file" id="FntAtlasInput" accept=".png, .fnt" multiple/>
+                </p>
+                
+                <p>
+                    텍스쳐 크기 : 
+                    
+                    <select id="TextureDemensionInput">
+                        <option value="0">256</option>
+                        <option value="1">512</option>
+                        <option value="2" selected>1024</option>
+                        <option value="3">2048</option>
+                        <option value="4">4096</option>
+                        <option value="5">8192</option>
+                    </select>
+                </p>
+                
+                <button id="GenerateButton">합치기!</button>
                 
             </div>
             
@@ -35,12 +50,26 @@
             </p>
             <p>
                 This project is inspired by
-                <a href="https://github.com/TandyRum1024">zik ][ (TandyRum1024)</a>'s
+                <a href="https://github.com/TandyRum1024">zik (TandyRum1024)</a>'s
                 <a href="https://github.com/TandyRum1024/hangul-johab-render-gms">project.</a>
             </p>
             <p>
                 Source code licensed under MIT license.
             </p>
         </div>
+        
+        <!-- dependencies -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.2.4/pixi.min.js"></script>
+        <script src="https://wzrd.in/bundle/parse-bmfont-xml@1.1.4"></script>
+        <!-- <script src="https://wzrd.in/bundle/xml-js@1.6.11"></script> -->
+        <!-- <script src="https://wzrd.in/bundle/bin-pack@1.0.2"></script> -->
+        
+        <!-- sources -->
+        <script src="./js/binpack.js"></script>
+        
+        <!-- main -->
+        <script src="./js/strings.js"></script>
+        <script src="./js/HangulAtlasEditor.js"></script>
+        <script src="./js/main.js"></script>
     </body>
 </html>

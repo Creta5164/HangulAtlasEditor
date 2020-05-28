@@ -432,7 +432,7 @@ HangulAtlasEditor.DrawFntGlyph = function(data, index) {
                         data.drawInfos.push({
                             
                             x: this.DKBHorizontalUnit * offset[1],
-                            y: this.DKBVerticalUnit * offset[0],
+                            y: this.DKBVerticalUnit   * offset[0],
                             width:  this.DKBHorizontalUnit,
                             height: this.DKBVerticalUnit,
                             
@@ -496,7 +496,7 @@ HangulAtlasEditor.DrawFntGlyph = function(data, index) {
                     
                     data.charInfoResult.xoffset  = 0;
                     data.charInfoResult.yoffset  = 0;
-                    data.charInfoResult.xadvance = 0;
+                    data.charInfoResult.xadvance = this.DKBHorizontalUnit;
                 }
                 
                 data.drawInfos = null;
@@ -556,7 +556,7 @@ HangulAtlasEditor.ExportFntData = function(data) {
     
     result += "  <pages>\n";
     for (var key in data.pages) result += `    <page id="${key}" file="${data.pages[key]}" />\n`;
-    result += "  <pages/>\n";
+    result += "  </pages>\n";
     
     result += `  <chars count="${data.chars.length}">\n`;
     for (var key in data.chars) {
@@ -565,7 +565,7 @@ HangulAtlasEditor.ExportFntData = function(data) {
         for (var key2 in data.chars[key]) result += ` ${key2}="${data.chars[key][key2]}"`;
         result += " />\n";
     }
-    result += "  <pages/>\n";
+    result += "  </chars>\n";
     
     var isKorean, charCode;
     
@@ -606,7 +606,7 @@ HangulAtlasEditor.ExportFntData = function(data) {
         for (var key2 in data.kernings[key]) result += ` ${key2}="${data.kernings[key][key2]}"`;
         result += " />\n";
     }
-    result += "  <kernings/>\n";
+    result += "  </kernings>\n";
     
     result += "</font>\n";
     

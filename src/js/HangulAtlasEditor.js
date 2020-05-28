@@ -16,6 +16,7 @@ HangulAtlasEditor.AlphabetType = {
 HangulAtlasEditor.UNICODE_CONSONANTS = "ㄱㄲㄳㄴㄵㄶㄷㄸㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅃㅄㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
 HangulAtlasEditor.UNICODE_VOWELS     = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";
 
+HangulAtlasEditor.UNICODE_ALPHABETS = HangulAtlasEditor.UNICODE_CONSONANTS + HangulAtlasEditor.UNICODE_VOWELS;
 HangulAtlasEditor.UNICODE_ALPHABET_START = 0x3131;
 HangulAtlasEditor.UNICODE_ALPHABET_END   = 0x318F;
 
@@ -34,6 +35,14 @@ HangulAtlasEditor.DKB_HORIZONTAL_LINE = 30;
 HangulAtlasEditor.DKB_VERTICAL_LINE   = 18;
 
 HangulAtlasEditor.DKB_TABLE = {
+    
+    ALPHABET: {
+        LINE_OFFSET: 0,
+        CHARSET: [
+            HangulAtlasEditor.UNICODE_CONSONANTS,
+            HangulAtlasEditor.UNICODE_VOWELS
+        ]
+    },
     
     WITHOUT_TAIL: {
         
@@ -115,7 +124,18 @@ HangulAtlasEditor.Initialize = function(timeout) {
 
 HangulAtlasEditor.GetGlyph = function(glyph) {
     
-    var code = glyph.charCodeAt(0) - this.UNICODE_START;
+    var code = glyph.charCodeAt(0);
+    
+    if (code <= this.UNICODE_END) {
+        
+        var bulset = HangulAtlasEditor.DKB_TABLE.ALPHABET.CHARSET;
+        
+        if ((head = bulset[0].indexOf(glyph)) !== -1 ||
+            (head = bulset[1].indexOf(glyph)) !== -1)
+            return [head];
+    }
+    
+    code -= this.UNICODE_START;
     
     var head = Math.floor(code / (this.UNICODE_HEAD_RANGE));
     var body = Math.floor(code / (this.UNICODE_BODY_RANGE) % HangulAtlasEditor.UNICODE_BODIES.length);
@@ -135,6 +155,11 @@ HangulAtlasEditor.GetGlyphString = function(glyph) {
 };
 
 HangulAtlasEditor.ToGlyphString = function(glyph) {
+    
+    if (glyph.length === 1)
+        return [
+            this.UNICODE_ALPHABETS.charAt(glyph[0])
+        ];
     
     if (glyph.length === 2)
         return [
@@ -233,27 +258,37 @@ HangulAtlasEditor.GetDKBAtlasData = function(glyphData, glyphStringData) {
     
     var head, body, tail;
     
-    if (glyphData.length === 2) {
+    switch (glyphData.length) {
         
-        //받침 종성이 없는 경우
+        case 1:
         
-        head = this.GetDKBLine(this.DKB_TABLE.WITHOUT_TAIL.HEAD, glyphStringData[1]);
-        body = this.GetDKBLine(this.DKB_TABLE.WITHOUT_TAIL.BODY, glyphStringData[0]);
+            //자음, 모음만 있는 경우
+            
+            head = this.GetDKBLine(this.DKB_TABLE.ALPHABET, glyphStringData[0]);
+            
+            return [[head, glyphData[0]]];
         
-        return [[head, glyphData[0]], [body, glyphData[1]]];
+        case 2:
         
-    } else if (glyphData.length === 3) {
+            //받침 종성이 없는 경우
+            
+            head = this.GetDKBLine(this.DKB_TABLE.WITHOUT_TAIL.HEAD, glyphStringData[1]);
+            body = this.GetDKBLine(this.DKB_TABLE.WITHOUT_TAIL.BODY, glyphStringData[0]);
+            
+            return [[head, glyphData[0]], [body, glyphData[1]]];
+            
+        case 3:
         
-        //받침 종성이 있는 경우
+            //받침 종성이 있는 경우
+            
+            head = this.GetDKBLine(this.DKB_TABLE.WITH_TAIL.HEAD, glyphStringData[1]);
+            body = this.GetDKBLine(this.DKB_TABLE.WITH_TAIL.BODY, glyphStringData[0]);
+            tail = this.GetDKBLine(this.DKB_TABLE.WITH_TAIL.TAIL, glyphStringData[1]);
+            
+            return [[head, glyphData[0]], [body, glyphData[1]], [tail, glyphData[2]]];
         
-        head = this.GetDKBLine(this.DKB_TABLE.WITH_TAIL.HEAD, glyphStringData[1]);
-        body = this.GetDKBLine(this.DKB_TABLE.WITH_TAIL.BODY, glyphStringData[0]);
-        tail = this.GetDKBLine(this.DKB_TABLE.WITH_TAIL.TAIL, glyphStringData[1]);
-        
-        return [[head, glyphData[0]], [body, glyphData[1]], [tail, glyphData[2]]];
+        default: return null;
     }
-    
-    return null;
 };
 
 HangulAtlasEditor.GetDKBLine = function(bulset, glyphPart) {
@@ -325,6 +360,7 @@ HangulAtlasEditor.GenerateFnt = function(sizeLevel) {
     
     var currentPage   = new Node(new Rect(0, 0, sizeLevel, sizeLevel));
     var currentCanvas = new CanvasView(sizeLevel, sizeLevel);
+    var currentPageIndex = 0;
     
     var charInfo;
     var charInfoResult;
@@ -333,68 +369,99 @@ HangulAtlasEditor.GenerateFnt = function(sizeLevel) {
     var insertedRect;
     //for (var char of chars) {
     
+    var drawInfo = null;
+    
     for (var i = 0; i < chars.length; i++) {
         
-        charInfo       = chars[i];
-        charInfoResult = charResult[i];
-        
-        charCode = charInfo.id;
-        
-        if (charCode >= this.UNICODE_ALPHABET_START &&
-            charCode <= this.UNICODE_ALPHABET_END &&
-            (alphabetType = this.GetAlphabetType(charCode)) !== this.AlphabetType.None) {
+        if (!drawInfo) {
             
+            charInfo       = chars[i];
+            charInfoResult = charResult[i];
             
-        }
-        
-        else if (charCode >= this.UNICODE_START &&
-                 charCode <= this.UNICODE_END) {
+            charCode = charInfo.id;
             
-            
-            
-        } else {
-            
-            insertedRect = currentPage.insert_rect(
-                new Rect(
-                    0, 0,
-                    charInfo.width  + fullSpaceWidth,
-                    charInfo.height + fullSpaceHeight
-                )
-            );
-            
-            if (insertedRect) {
+            if (charCode >= this.UNICODE_ALPHABET_START &&
+                charCode <= this.UNICODE_ALPHABET_END &&
+                (alphabetType = this.GetAlphabetType(charCode)) !== this.AlphabetType.None) {
                 
-                insertedRect = insertedRect.rect;
                 
-                currentCanvas.Context.drawImage(
-                    
-                    //Source
-                    this.FntAtlasTextures[pages[charInfo.page]],
-                    
-                    //source x, y, width, height
-                    charInfo.x,     charInfo.y,
-                    charInfo.width, charInfo.height,
-                    
-                    //Destination coordinate
-                    info.padding[0] + insertedRect.x,
-                    info.padding[3] + insertedRect.y,
-                    charInfo.width, charInfo.height
-                );
+            }
+            
+            else if (charCode >= this.UNICODE_START &&
+                    charCode <= this.UNICODE_END) {
                 
-                charInfoResult.x      = insertedRect.x;
-                charInfoResult.y      = insertedRect.y;
-                charInfoResult.width  = insertedRect.w;
-                charInfoResult.height = insertedRect.h;
+                
+                drawInfo = {
+                    x: charInfo.x,
+                    y: charInfo.y,
+                    width:  charInfo.width,
+                    height: charInfo.height,
+                    
+                    texture: this.FntAtlasTextures[pages[charInfo.page]]
+                };
+                
                 
             } else {
                 
-                //새 페이지 만들기
-                currentPage   = new Node(new Rect(0, 0, sizeLevel, sizeLevel));
-                currentCanvas = new CanvasView(sizeLevel, sizeLevel);
-                i--;
+                drawInfo = {
+                    x: charInfo.x,
+                    y: charInfo.y,
+                    
+                    width:  charInfo.width,
+                    height: charInfo.height,
+                    
+                    texture: this.FntAtlasTextures[pages[charInfo.page]]
+                };
             }
         }
+        
+        insertedRect = currentPage.insert_rect(
+            new Rect(
+                0, 0,
+                drawInfo.width  + fullSpaceWidth,
+                drawInfo.height + fullSpaceHeight
+            )
+        );
+        
+        if (insertedRect) {
+            
+            insertedRect = insertedRect.rect;
+            
+            currentCanvas.Context.drawImage(
+                
+                //Source
+                drawInfo.texture,
+                
+                //source x, y, width, height
+                drawInfo.x,     drawInfo.y,
+                drawInfo.width, drawInfo.height,
+                
+                //Destination coordinate
+                info.padding[0] + insertedRect.x,
+                info.padding[3] + insertedRect.y,
+                drawInfo.width, drawInfo.height
+            );
+            
+            charInfoResult.x      = insertedRect.x;
+            charInfoResult.y      = insertedRect.y;
+            charInfoResult.width  = insertedRect.w;
+            charInfoResult.height = insertedRect.h;
+            charInfoResult.page   = currentPageIndex;
+            
+            drawInfo = null;
+            
+        } else {
+            
+            //새 페이지 만들기
+            pageResult.push[{ page: currentPage, texture: currentCanvas }];
+            currentPage   = new Node(new Rect(0, 0, sizeLevel, sizeLevel));
+            currentCanvas = new CanvasView(sizeLevel, sizeLevel);
+            currentPageIndex++;
+            i--;
+        }
     }
+    
+    pageResult.push[{ page: currentPage, texture: currentCanvas }];
     
     document.body.appendChild(currentCanvas.Element);
 };

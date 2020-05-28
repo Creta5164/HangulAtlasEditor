@@ -84,7 +84,11 @@ Main.FntAtlasInput_Change = function(event) {
         
         this.FntAtlasInput.value = null;
         alert(Strings.NOT_VALID_FNT);
+        return;
     }
+    
+    var name = fntFile.name;
+    this.FileName = name.substring(0, name.lastIndexOf('.'));
     
     if (FileReader) {
         
@@ -137,7 +141,7 @@ Main.FntAtlasInput_DataLoad = function(e) {
 
 Main.GenerateButton_Click = function(e) {
     
-    HangulAtlasEditor.GenerateFnt(this.TextureDemensionInput.value);
+    HangulAtlasEditor.GenerateFnt(this.TextureDemensionInput.value, this.FileName);
 };
 
 //Main.TEST_DRAW_2580Glyph = function() {

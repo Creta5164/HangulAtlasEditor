@@ -13,6 +13,9 @@ HangulAtlasEditor.AlphabetType = {
     Vowel:      1
 };
 
+HangulAtlasEditor.RENDER_SPEED = 16;
+HangulAtlasEditor.RENDER_STEP  = 10;
+
 HangulAtlasEditor.UNICODE_CONSONANTS = "ㄱㄲㄳㄴㄵㄶㄷㄸㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅃㅄㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
 HangulAtlasEditor.UNICODE_VOWELS     = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";
 
@@ -308,7 +311,7 @@ HangulAtlasEditor.GetDKBLine = function(bulset, glyphPart) {
     return index;
 };
 
-HangulAtlasEditor.GenerateFnt = function(sizeLevel) {
+HangulAtlasEditor.GenerateFnt = function(sizeLevel, fileName) {
     
     if (!HangulAtlasEditor.IsDKBTextureLoaded ||
         !HangulAtlasEditor.IsFntAtlasTexturesLoaded ||
@@ -334,136 +337,280 @@ HangulAtlasEditor.GenerateFnt = function(sizeLevel) {
     
     sizeLevel = Math.pow(2, sizeLevel);
     
-    var view = this.Views.FontAtlasPreview;
+    var data = {};
     
-    if (view)
+    data.sizeLevel = sizeLevel;
+    data.fileName = fileName;
+    
+    data.view = this.Views.FontAtlasPreview;
+    
+    if (data.view)
         document.body.removeChild(view.Element)
     
-    var chars    = this.FntData.chars;
-    var common   = this.FntData.common;
-    var info     = this.FntData.info;
-    var kernings = this.FntData.info;
-    var pages    = this.FntData.pages;
+    data.chars    = this.FntData.chars;
+    data.common   = this.FntData.common;
+    data.info     = this.FntData.info;
+    data.kernings = this.FntData.kernings;
+    data.pages    = this.FntData.pages;
     
     //padding order is clockwise from top. [up, right, down, left]
-    var fullSpaceWidth  = info.padding[1] + info.padding[3] + info.spacing[0];
-    var fullSpaceHeight = info.padding[0] + info.padding[2] + info.spacing[1];
+    data.fullSpaceWidth  = data.info.padding[1] + data.info.padding[3] + data.info.spacing[0];
+    data.fullSpaceHeight = data.info.padding[0] + data.info.padding[2] + data.info.spacing[1];
     
-    var charResult = this.CopyObjectRecursive(chars);
-    var pageResult = [];
+    data.charResult = this.CopyObjectRecursive(data.chars);
+    data.pageResult = [];
     
-    var result = {
-        common: this.CopyObjectRecursive(common),
-        info: this.CopyObjectRecursive(info),
-        kernings: this.CopyObjectRecursive(kernings)
+    data.result = {
+        common: this.CopyObjectRecursive(data.common),
+        info: this.CopyObjectRecursive(data.info),
+        kernings: this.CopyObjectRecursive(data.kernings)
     };
     
-    var currentPage   = new Node(new Rect(0, 0, sizeLevel, sizeLevel));
-    var currentCanvas = new CanvasView(sizeLevel, sizeLevel);
-    var currentPageIndex = 0;
+    data.common.scaleW = sizeLevel;
+    data.common.scaleH = sizeLevel;
     
-    var charInfo;
-    var charInfoResult;
-    var charCode;
-    var alphabetType;
-    var insertedRect;
-    //for (var char of chars) {
+    data.currentPage   = new Node(new Rect(0, 0, sizeLevel, sizeLevel));
+    data.currentCanvas = new CanvasView(sizeLevel, sizeLevel);
+    data.currentPageIndex = 0;
     
-    var drawInfo = null;
+    data.charInfo;
+    data.charInfoResult;
+    data.charCode;
+    data.insertedRect;
     
-    for (var i = 0; i < chars.length; i++) {
+    data.glyph = null;
+    data.glyphString = null;
+    data.atlasData = null;
+    
+    data.drawInfos = null;
+    
+    data.isKorean = false;
+    
+    document.body.appendChild(data.currentCanvas.Element);
+    
+    setTimeout(this.DrawFntGlyph.bind(this, data), HangulAtlasEditor.RENDER_SPEED);
+};
+
+HangulAtlasEditor.DrawFntGlyph = function(data, index) {
+    
+    if (!index)
+        index = 0;
+    
+    if (index < data.chars.length) {
         
-        if (!drawInfo) {
+        for (var step = 0; step < this.RENDER_STEP; step++) {
             
-            charInfo       = chars[i];
-            charInfoResult = charResult[i];
+            if (index >= data.chars.length)
+                break;
             
-            charCode = charInfo.id;
-            
-            if (charCode >= this.UNICODE_ALPHABET_START &&
-                charCode <= this.UNICODE_ALPHABET_END &&
-                (alphabetType = this.GetAlphabetType(charCode)) !== this.AlphabetType.None) {
+            if (!data.drawInfos) {
                 
+                data.charInfo       = data.chars[index];
+                data.charInfoResult = data.charResult[index];
+                data.koreanFontData = null;
                 
+                data.charCode = data.charInfo.id;
+                
+                data.isKorean = data.charCode >= this.UNICODE_ALPHABET_START &&
+                                data.charCode <= this.UNICODE_ALPHABET_END &&
+                                this.GetAlphabetType(data.charCode) !== this.AlphabetType.None;
+                
+                if (!data.isKorean)
+                    data.isKorean = data.charCode >= this.UNICODE_START && data.charCode <= this.UNICODE_END;
+                
+                if (data.isKorean) {
+                    
+                    data.glyph       = this.GetGlyph(String.fromCharCode(data.charInfo.id));
+                    data.glyphString = this.ToGlyphString(data.glyph);
+                    
+                    data.atlasData   = this.GetDKBAtlasData(data.glyph, data.glyphString);
+                    
+                    data.drawInfos = [];
+                    
+                    for (var offset of data.atlasData) {
+                        
+                        data.drawInfos.push({
+                            
+                            x: this.DKBHorizontalUnit * offset[1],
+                            y: this.DKBVerticalUnit * offset[0],
+                            width:  this.DKBHorizontalUnit,
+                            height: this.DKBVerticalUnit,
+                            
+                            texture: this.DKBTexture
+                        });
+                    }
+                    
+                    data.koreanFontData = true;
+                    
+                } else {
+                    
+                    data.drawInfos = [{
+                        x: data.charInfo.x,
+                        y: data.charInfo.y,
+                        
+                        width:  data.charInfo.width,
+                        height: data.charInfo.height,
+                        
+                        texture: this.FntAtlasTextures[data.pages[data.charInfo.page]]
+                    }];
+                }
             }
             
-            else if (charCode >= this.UNICODE_START &&
-                    charCode <= this.UNICODE_END) {
+            data.insertedRect = data.currentPage.insert_rect(
+                new Rect(
+                    0, 0,
+                    data.drawInfos[0].width  + data.fullSpaceWidth,
+                    data.drawInfos[0].height + data.fullSpaceHeight
+                )
+            );
+            
+            if (data.insertedRect) {
                 
+                data.insertedRect = data.insertedRect.rect;
                 
-                drawInfo = {
-                    x: charInfo.x,
-                    y: charInfo.y,
-                    width:  charInfo.width,
-                    height: charInfo.height,
+                for (var drawInfo of data.drawInfos)
+                    data.currentCanvas.Context.drawImage(
+                        
+                        //Source
+                        drawInfo.texture,
+                        
+                        //source x, y, width, height
+                        drawInfo.x,     drawInfo.y,
+                        drawInfo.width, drawInfo.height,
+                        
+                        //Destination coordinate
+                        data.info.padding[0] + data.insertedRect.x,
+                        data.info.padding[3] + data.insertedRect.y,
+                        drawInfo.width, drawInfo.height
+                    );
+                
+                data.charInfoResult.x      = data.insertedRect.x;
+                data.charInfoResult.y      = data.insertedRect.y;
+                data.charInfoResult.width  = data.insertedRect.w;
+                data.charInfoResult.height = data.insertedRect.h;
+                data.charInfoResult.page   = data.currentPageIndex;
+                
+                if (data.koreanFontData) {
                     
-                    texture: this.FntAtlasTextures[pages[charInfo.page]]
-                };
+                    //TODO : 옵션 추가하기
+                    
+                    data.charInfoResult.xoffset  = 0;
+                    data.charInfoResult.yoffset  = 0;
+                    data.charInfoResult.xadvance = 0;
+                }
                 
+                data.drawInfos = null;
                 
             } else {
                 
-                drawInfo = {
-                    x: charInfo.x,
-                    y: charInfo.y,
-                    
-                    width:  charInfo.width,
-                    height: charInfo.height,
-                    
-                    texture: this.FntAtlasTextures[pages[charInfo.page]]
-                };
+                //새 페이지 만들기
+                data.pageResult.push({ page: data.currentPage, texture: data.currentCanvas });
+                data.currentPage   = new Node(new Rect(0, 0, data.sizeLevel, data.sizeLevel));
+                data.currentCanvas = new CanvasView(data.sizeLevel, data.sizeLevel);
+                data.currentPageIndex++;
+                index--;
+                
+                document.body.appendChild(data.currentCanvas.Element);
             }
+            
+            index++;
         }
         
-        insertedRect = currentPage.insert_rect(
-            new Rect(
-                0, 0,
-                drawInfo.width  + fullSpaceWidth,
-                drawInfo.height + fullSpaceHeight
-            )
-        );
+        setTimeout(this.DrawFntGlyph.bind(this, data, index), HangulAtlasEditor.RENDER_SPEED);
+    
+    } else {
         
-        if (insertedRect) {
-            
-            insertedRect = insertedRect.rect;
-            
-            currentCanvas.Context.drawImage(
-                
-                //Source
-                drawInfo.texture,
-                
-                //source x, y, width, height
-                drawInfo.x,     drawInfo.y,
-                drawInfo.width, drawInfo.height,
-                
-                //Destination coordinate
-                info.padding[0] + insertedRect.x,
-                info.padding[3] + insertedRect.y,
-                drawInfo.width, drawInfo.height
-            );
-            
-            charInfoResult.x      = insertedRect.x;
-            charInfoResult.y      = insertedRect.y;
-            charInfoResult.width  = insertedRect.w;
-            charInfoResult.height = insertedRect.h;
-            charInfoResult.page   = currentPageIndex;
-            
-            drawInfo = null;
-            
-        } else {
-            
-            //새 페이지 만들기
-            pageResult.push[{ page: currentPage, texture: currentCanvas }];
-            currentPage   = new Node(new Rect(0, 0, sizeLevel, sizeLevel));
-            currentCanvas = new CanvasView(sizeLevel, sizeLevel);
-            currentPageIndex++;
-            i--;
-        }
+        data.pageResult.push({ page: data.currentPage, texture: data.currentCanvas });
+        
+       var pages = [];
+        
+        for (var i = 0; i < data.pageResult.length; i++)
+            pages.push(data.fileName + "_" + i.toString().padStart(2, '0') + ".png");
+        
+        data.result.pages = pages;
+        data.result.chars = data.charResult;
+        
+        console.log(this.ExportFntData(data.result));
+        
+        //console.log(data.result);
+        //console.log(X2Js.json2xml_str(data.result));
     }
+};
+
+HangulAtlasEditor.ExportFntData = function(data) {
     
-    pageResult.push[{ page: currentPage, texture: currentCanvas }];
+    var result = "";
     
-    document.body.appendChild(currentCanvas.Element);
+    console.log(data);
+    
+    result += "<?xml version=\"1.0\"?>\n";
+    result += "<font>\n";
+    
+    result += "  <info";
+    for (var key in data.info) result += ` ${key}="${data.info[key]}"`;
+    result += "/>\n";
+    
+    result += "  <common";
+    for (var key in data.common) result += ` ${key}="${data.common[key]}"`;
+    result += "/>\n";
+    
+    result += "  <pages>\n";
+    for (var key in data.pages) result += `    <page id="${key}" file="${data.pages[key]}" />\n`;
+    result += "  <pages/>\n";
+    
+    result += `  <chars count="${data.chars.length}">\n`;
+    for (var key in data.chars) {
+        
+        result += "    <char";
+        for (var key2 in data.chars[key]) result += ` ${key2}="${data.chars[key][key2]}"`;
+        result += " />\n";
+    }
+    result += "  <pages/>\n";
+    
+    var isKorean, charCode;
+    
+    result += `  <kernings count="${data.kernings.length}">\n`;
+    for (var key in data.kernings) {
+        
+        
+        
+        charCode = data.kernings[key].first;
+        
+        isKorean = charCode >= this.UNICODE_ALPHABET_START &&
+                   charCode <= this.UNICODE_ALPHABET_END &&
+                   this.GetAlphabetType(charCode) !== this.AlphabetType.None;
+        
+        if (!isKorean)
+            isKorean = charCode >= this.UNICODE_START && charCode <= this.UNICODE_END;
+        
+        if (isKorean)
+            data.kernings[key].amount = 0;
+        
+        
+        
+        charCode = data.kernings[key].second;
+        
+        isKorean = charCode >= this.UNICODE_ALPHABET_START &&
+                   charCode <= this.UNICODE_ALPHABET_END &&
+                   this.GetAlphabetType(charCode) !== this.AlphabetType.None;
+        
+        if (!isKorean)
+            isKorean = charCode >= this.UNICODE_START && charCode <= this.UNICODE_END;
+        
+        if (isKorean)
+            data.kernings[key].amount = 0;
+        
+        
+        
+        result += "    <kerning";
+        for (var key2 in data.kernings[key]) result += ` ${key2}="${data.kernings[key][key2]}"`;
+        result += " />\n";
+    }
+    result += "  <kernings/>\n";
+    
+    result += "</font>\n";
+    
+    return result;
 };
 
 HangulAtlasEditor.GetAlphabetType = function(code) {
@@ -478,11 +625,6 @@ HangulAtlasEditor.GetAlphabetType = function(code) {
     
     return this.AlphabetType.None;
 };
-
-/*
-ㄱㄲㄳㄴㄵㄶㄷㄸㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅃㅄㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ
-ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ
-*/
 
 HangulAtlasEditor.CopyObjectRecursive = function(source) {
     

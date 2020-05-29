@@ -1,0 +1,52 @@
+body[pending] input,
+body[pending] select,
+body[pending] button {
+    
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.horizontal {
+    
+    display: flex;
+    
+    height: auto;
+}
+
+#RenderingPreviewContainer {
+    
+    width:  512px;
+    flex-basis: 512px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+#RenderingPreviewContainer>canvas {
+    
+    width:  512px;
+    height: 512px;
+}
+
+#RenderingPreviewContainer>pre {
+    
+    overflow: scroll;
+    height: 512px;
+}
+
+#RenderingPreviewListContainer {
+    
+    flex-grow: 1;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#RenderingPreviewListContainer>canvas {
+    
+    width:  256px;
+    height: 256px;
+}
+
+#PIXIViewContainer>p>textarea {
+    
+    width: 512px;
+}

@@ -3,9 +3,12 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>한글 조합형 아틀라스 에디터</title>
+        <title></title>
+        
+        <link rel="stylesheet" href="./css/main.css"/>
     </head>
-    <body style="background:black; color:white">
+    <body style="background:black; color:white"
+          pending>
         
         <div class="header">
             
@@ -21,7 +24,7 @@
                 </p>
                 
                 <p>
-                    텍스쳐 크기 : 
+                    <span id="TextureSizeLabel"></span>
                     
                     <select id="TextureDemensionInput">
                         <option value="0">256</option>
@@ -33,7 +36,45 @@
                     </select>
                 </p>
                 
-                <button id="GenerateButton">합치기!</button>
+                <div>
+                    <p>
+                        <span id="OffsetsLabel"></span>
+                        
+                        <input type="number" id="OffsetXInput"/>
+                        <input type="number" id="OffsetYInput"/>
+                    </p>
+                    
+                    <p>
+                        <span id="AdvanceLabel"></span>
+                        <input type="number" id="AdvanceXInput"/>
+                    </p>
+                </div>
+                
+                <button id="GenerateButton"></button>
+                <button id="DownloadZipButton"></button>
+                
+                <p id="ProgressLabel"></p>
+                
+                <div class="horizontal">
+                    
+                    <div id="RenderingPreviewContainer">
+                        
+                    </div>
+                    
+                    <div id="RenderingPreviewListContainer">
+                        
+                    </div>
+                    
+                </div>
+                
+                <div id="PIXIViewContainer">
+                    
+                    <p>
+                        <span id="PIXIViewTextLabel"></span>
+                        <textarea rows="10" id="PIXIViewTextInput"></textarea>
+                    </p>
+                    
+                </div>
                 
             </div>
             
@@ -61,6 +102,8 @@
         <!-- dependencies -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.2.4/pixi.min.js"></script>
         <script src="https://wzrd.in/bundle/parse-bmfont-xml@1.1.4"></script>
+        <script src="http://cdn.jsdelivr.net/g/filesaver.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.3.0/jszip.min.js"></script>
         <!-- <script src="https://wzrd.in/bundle/xml-js@1.6.11"></script> -->
         <!-- <script src="https://wzrd.in/bundle/bin-pack@1.0.2"></script> -->
         
@@ -69,6 +112,7 @@
         
         <!-- main -->
         <script src="./js/strings.js"></script>
+        <script src="./js/pixi-view.js"></script>
         <script src="./js/HangulAtlasEditor.js"></script>
         <script src="./js/main.js"></script>
     </body>

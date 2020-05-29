@@ -1,6 +1,6 @@
 function PIXIView() {
     
-    this.Instance = new PIXI.Application({ backgroundColor: 0 });
+    this.Instance = new PIXI.Application({ width: 1280, height: 720, transparent: true });
     this.Element  = this.Instance.view;
     this.Stage    = this.Instance.stage;
     this.Loader = this.Instance.loader;
@@ -10,7 +10,7 @@ function PIXIView() {
 
 PIXIView.prototype.AddAssetToLoader = function(name, base64) {
     
-    this.Loader.add(name, base64);
+    this.Loader.add(name + Date.now(), base64);
 };
 
 PIXIView.prototype.InitializeText = function(font, load) {
@@ -42,6 +42,7 @@ PIXIView.prototype.SetText = function(string) {
 
 PIXIView.prototype.Dispose = function() {
     
+    this.Loader.reset();
     this.Instance.destroy(true);
     
     this.Instance = null;
@@ -132,8 +133,8 @@ PIXI.BitmapFontLoader.use = function(resource, next)
         for (const name in this.resources)
         {
             const bitmapResource = this.resources[name];
-
-            if (bitmapResource.name === url)//if (bitmapResource.url === url)
+            
+            if (bitmapResource.name.indexOf(url) !== -1)//if (bitmapResource.url === url)
             {
                 bitmapResource.metadata.pageFile = pageFile;
                 if (bitmapResource.texture)

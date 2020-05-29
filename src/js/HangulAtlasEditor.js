@@ -1,7 +1,7 @@
 /*
     This source code is depends on parse-bmfont-xml.
 */
-const BMFont_ParseXml = require('parse-bmfont-xml');
+const parseBmfontXml = require('parse-bmfont-xml');
 
 let HangulAtlasEditor = function() { HangulAtlasEditor.Initialize(); };
 
@@ -128,13 +128,15 @@ HangulAtlasEditor.GetGlyph = function(glyph) {
     
     var code = glyph.charCodeAt(0);
     
-    if (code <= this.UNICODE_END) {
+    var head;
+    
+    if (code <= this.UNICODE_ALPHABET_END) {
         
-        var bulset = HangulAtlasEditor.DKB_TABLE.ALPHABET.CHARSET;
+        if ((head = this.UNICODE_CONSONANTS.indexOf(glyph)) !== -1)
+            return [false, head];
         
-        if ((head = bulset[0].indexOf(glyph)) !== -1 ||
-            (head = bulset[1].indexOf(glyph)) !== -1)
-            return [head];
+        if ((head = this.UNICODE_VOWELS.indexOf(glyph)) !== -1)
+            return [true, head];
     }
     
     code -= this.UNICODE_START;
@@ -158,12 +160,14 @@ HangulAtlasEditor.GetGlyphString = function(glyph) {
 
 HangulAtlasEditor.ToGlyphString = function(glyph) {
     
-    if (glyph.length === 1)
+    if (typeof glyph[0] === 'boolean')
         return [
-            this.UNICODE_ALPHABETS.charAt(glyph[0])
+            glyph[0] ? 
+            this.UNICODE_VOWELS.charAt(glyph[1]) :
+            this.UNICODE_CONSONANTS.charAt(glyph[1])
         ];
     
-    if (glyph.length === 2)
+    else if (glyph.length === 2)
         return [
             this.UNICODE_HEADS.charAt(glyph[0]),
             this.UNICODE_BODIES.charAt(glyph[1])
@@ -198,7 +202,7 @@ HangulAtlasEditor.LoadFntXml = function(data) {
     
     try {
         
-        this.FntData = BMFont_ParseXml(data);
+        this.FntData = parseBmfontXml(data);
         
     } catch (e) {
         
@@ -262,16 +266,17 @@ HangulAtlasEditor.GetDKBAtlasData = function(glyphData, glyphStringData) {
     
     switch (glyphData.length) {
         
-        case 1:
-        
-            //자음, 모음만 있는 경우
-            
-            head = this.GetDKBLine(this.DKB_TABLE.ALPHABET, glyphStringData[0]);
-            
-            return [[head, glyphData[0]]];
-        
         case 2:
-        
+            
+            if (typeof glyphData[0] === 'boolean') {
+                
+                //자음, 모음만 있는 경우
+                
+                head = this.GetDKBLine(this.DKB_TABLE.ALPHABET, glyphStringData[0]);
+                
+                return [[head, glyphData[1]]];
+            }
+            
             //받침 종성이 없는 경우
             
             head = this.GetDKBLine(this.DKB_TABLE.WITHOUT_TAIL.HEAD, glyphStringData[1]);
@@ -303,6 +308,12 @@ HangulAtlasEditor.GetDKBLine = function(bulset, glyphPart) {
         if (charset[index].indexOf(glyphPart) !== -1) {
             
             index += bulset.LINE_OFFSET;
+            
+            if (bulset === this.DKB_TABLE.ALPHABET) {
+                
+                console.log(glyphPart);
+                console.log(index);
+            }
             break;
         }
     }
@@ -379,8 +390,8 @@ HangulAtlasEditor.GenerateFnt = function({
         data.pages    = this.FntData.pages;
         
         //padding order is clockwise from top. [up, right, down, left]
-        data.fullSpaceWidth  = data.info.padding[1] + data.info.padding[3] + data.info.spacing[0];
-        data.fullSpaceHeight = data.info.padding[0] + data.info.padding[2] + data.info.spacing[1];
+        data.fullSpaceWidth  = data.info.padding[1] + data.info.padding[3] + data.info.spacing[0] - (data.info.spacing[0] % 2);
+        data.fullSpaceHeight = data.info.padding[0] + data.info.padding[2] + data.info.spacing[1] - (data.info.spacing[1] % 2);
         
         data.charResult = this.CopyObjectRecursive(data.chars);
         data.pageResult = [];
@@ -470,6 +481,9 @@ HangulAtlasEditor.DrawFntGlyph = function(data, index) {
                         
                         for (var offset of data.atlasData) {
                             
+                            if (typeof offset !== 'object')
+                                continue;
+                            
                             data.drawInfos.push({
                                 
                                 x: this.DKBHorizontalUnit * offset[1],
@@ -520,15 +534,15 @@ HangulAtlasEditor.DrawFntGlyph = function(data, index) {
                             drawInfo.width, drawInfo.height,
                             
                             //Destination coordinate
-                            data.info.padding[0] + data.insertedRect.x,
-                            data.info.padding[3] + data.insertedRect.y,
+                            data.insertedRect.x + data.info.spacing[0] + (data.info.spacing[0] % 2) + data.info.padding[3],
+                            data.insertedRect.y + data.info.spacing[1] + (data.info.spacing[1] % 2) + data.info.padding[0],
                             drawInfo.width, drawInfo.height
                         );
                     
-                    data.charInfoResult.x      = data.insertedRect.x;
-                    data.charInfoResult.y      = data.insertedRect.y;
-                    data.charInfoResult.width  = data.insertedRect.w;
-                    data.charInfoResult.height = data.insertedRect.h;
+                    data.charInfoResult.x      = data.insertedRect.x + data.info.spacing[0] + (data.info.spacing[0] % 2) + data.info.padding[3];
+                    data.charInfoResult.y      = data.insertedRect.y + data.info.spacing[1] + (data.info.spacing[1] % 2) + data.info.padding[0];
+                    data.charInfoResult.width  = drawInfo.width;
+                    data.charInfoResult.height = drawInfo.height;
                     data.charInfoResult.page   = data.currentPageIndex;
                     
                     if (data.isKoreanFontData) {

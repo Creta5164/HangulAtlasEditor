@@ -6,10 +6,12 @@ Main.Initialize = function() {
         return;
     
     this.DKBAtlasInput = document.getElementById("DKBAtlasInput");
+    this.DKBAtlasInput.addEventListener('click', this.DKBAtlasInput_Click.bind(this));
     this.DKBAtlasInput.addEventListener('change', this.DKBAtlasInput_Change.bind(this));
     this.DKBAtlasTexture = new Image();
     
     this.FntAtlasInput = document.getElementById("FntAtlasInput");
+    this.FntAtlasInput.addEventListener('click', this.FntAtlasInput_Click.bind(this));
     this.FntAtlasInput.addEventListener('change', this.FntAtlasInput_Change.bind(this));
     
     this.TextureDemensionInput = document.getElementById("TextureDemensionInput");
@@ -34,6 +36,7 @@ Main.Initialize = function() {
     
     this.ProgressLabel = document.getElementById("ProgressLabel");
     
+    this.GenerateViewContainer         = document.getElementById("GenerateViewContainer");
     this.RenderingPreviewContainer     = document.getElementById("RenderingPreviewContainer");
     this.RenderingPreviewListContainer = document.getElementById("RenderingPreviewListContainer");
     this.RenderingPreview = null;
@@ -46,7 +49,8 @@ Main.Initialize = function() {
     this.PIXIViewTextLabel = document.getElementById("PIXIViewTextLabel");
     this.PIXIViewTextInput = document.getElementById("PIXIViewTextInput");
     this.PIXIViewTextInput.addEventListener('input', this.PIXIViewTextInput_Change.bind(this));
-    this.PIXIViewTextInput.disabled = true;
+    this.PIXIViewTextInput.style.display = 'none';
+    this.PIXIViewTextInputCache = Strings.PIXI_PARAGRAPH;
     this.PIXIView = null;
     
     this.SetUIStrings(Strings.UI);
@@ -71,6 +75,11 @@ Main.SetUIStrings = function(strings) {
     this.AdvanceLabel.innerText = strings.ADVANCE + " : ";
     
     this.ProgressLabel.innerHTML = Strings.READY;
+};
+
+Main.DKBAtlasInput_Click = function(event) {
+    
+    this.DKBAtlasInput.value = null;
 };
 
 Main.DKBAtlasInput_Change = function(event) {
@@ -113,6 +122,11 @@ Main.DKBAtlasInput_Load = function(e) {
         if (HangulAtlasEditor.IsDKBTextureLoaded)
             this.AdvanceXInput.value = HangulAtlasEditor.DKBHorizontalUnit;
     }
+};
+
+Main.FntAtlasInput_Click = function(event) {
+    
+    this.FntAtlasInput.value = null;
 };
 
 Main.FntAtlasInput_Change = function(event) {
@@ -227,6 +241,8 @@ Main.GenerateButton_Click = function(e) {
     
     this.ProgressLabel.innerHTML = Strings.GENERATE_BEGIN;
     this.ProgressLabel_Pages = 0;
+    this.GenerateViewContainer.style.display = '';
+    this.PIXIViewTextInput.style.display = 'none';
     document.body.setAttribute('pending', '');
 };
 
@@ -286,7 +302,7 @@ Main.GenerateFnt_Done = function(fileName, xmlString, pageDataList) {
     
     this.PIXIView.AddAssetToLoader(
         fileName,
-        "data:text/fnt;base64," + btoa(xmlString)
+        "data:text/fnt;base64," + base64encode(xmlString)
     );
     
     var info = HangulAtlasEditor.FntData.info;
@@ -330,10 +346,11 @@ Main.DownloadZipButton_Click = function(e) {
 
 Main.PIXIView_Load = function() {
     
-    this.PIXIViewTextInput.disabled = false;
-    this.PIXIViewTextInput.value = Strings.PIXI_PARAGRAPH;
+    this.GenerateViewContainer.style.display = 'none';
+    this.PIXIViewTextInput.style.display = '';
+    this.PIXIViewTextInput.value = this.PIXIViewTextInputCache;
     
-    this.PIXIView.SetText(Strings.PIXI_PARAGRAPH);
+    this.PIXIView.SetText(this.PIXIViewTextInputCache);
 };
 
 Main.PIXIViewTextInput_Change = function(e) {

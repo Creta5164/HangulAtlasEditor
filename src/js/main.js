@@ -5,6 +5,8 @@ Main.Initialize = function() {
     if (this.Initialized)
         return;
     
+    this.InitializeView();
+    
     this.DKBAtlasInput = document.getElementById("DKBAtlasInput");
     this.DKBAtlasInput.addEventListener('click', this.DKBAtlasInput_Click.bind(this));
     this.DKBAtlasInput.addEventListener('change', this.DKBAtlasInput_Change.bind(this));
@@ -16,14 +18,11 @@ Main.Initialize = function() {
     
     this.TextureDemensionInput = document.getElementById("TextureDemensionInput");
     
-    this.OffsetsLabel = document.getElementById("OffsetsLabel");
     this.OffsetXInput = document.getElementById("OffsetXInput");
     this.OffsetYInput = document.getElementById("OffsetYInput");
     
     this.OffsetXInput.value = 0;
     this.OffsetYInput.value = 0;
-    
-    this.AdvanceLabel  = document.getElementById("AdvanceLabel");
     this.AdvanceXInput = document.getElementById("AdvanceXInput");
     
     this.GenerateButton = document.getElementById("GenerateButton");
@@ -49,7 +48,6 @@ Main.Initialize = function() {
     this.PIXIViewTextLabel = document.getElementById("PIXIViewTextLabel");
     this.PIXIViewTextInput = document.getElementById("PIXIViewTextInput");
     this.PIXIViewTextInput.addEventListener('input', this.PIXIViewTextInput_Change.bind(this));
-    this.PIXIViewTextInput.style.display = 'none';
     this.PIXIViewTextInputCache = Strings.PIXI_PARAGRAPH;
     this.PIXIView = null;
     
@@ -65,16 +63,52 @@ Main.SetUIStrings = function(strings) {
     
     document.title = strings.TITLE;
     
-    document.getElementById("TextureSizeLabel")
-        .innerText = strings.TEXTURE_SIZE + " : ";
+    this.DKBTextureLabel = document.getElementById("DKBTextureLabel");
+    this.DKBTextureHelp  = document.getElementById("DKBTextureHelp");
+    
+    this.FntAtlasLabel = document.getElementById("FntAtlasLabel");
+    this.FntAtlasHelp  = document.getElementById("FntAtlasHelp");
+    
+    this.TextureSizeLabel = document.getElementById("TextureSizeLabel");
+    this.TextureSizeHelp  = document.getElementById("TextureSizeHelp");
+    
+    this.OffsetsLabel = document.getElementById("OffsetsLabel");
+    this.OffsetsHelp  = document.getElementById("OffsetsHelp");
+    
+    this.AdvanceLabel  = document.getElementById("AdvanceLabel");
+    this.AdvanceHelp   = document.getElementById("AdvanceHelp");
+    
+    this.DKBTextureLabel.innerText = strings.DKBFILE;
+    this.DKBTextureHelp.innerHTML  = strings.HELP.DKBFILE;
+    
+    this.FntAtlasLabel.innerText   = strings.FNTFILE;
+    this.FntAtlasHelp.innerHTML    = strings.HELP.FNTFILE;
+    
+    this.TextureSizeLabel.innerText = strings.TEXTURE_SIZE;
+    this.TextureSizeHelp.innerHTML  = strings.HELP.TEXTURE_SIZE;
     
     this.GenerateButton.innerText    = strings.GENERATE_BUTTON;
     this.DownloadZipButton.innerText = strings.DOWNLOAD_ZIP;
     
-    this.OffsetsLabel.innerText = strings.OFFSETS + " : ";
-    this.AdvanceLabel.innerText = strings.ADVANCE + " : ";
+    this.OffsetsLabel.innerText = strings.OFFSETS;
+    this.OffsetsHelp.innerHTML  = strings.HELP.OFFSETS;
+    
+    this.AdvanceLabel.innerText = strings.ADVANCE;
+    this.AdvanceHelp.innerHTML  = strings.HELP.ADVANCE;
     
     this.ProgressLabel.innerHTML = Strings.READY;
+    
+    var about = document.getElementById("About");
+    
+    var elID;
+    for (var el of about.children) {
+        if (!el.id || el.id.length <= 6)
+            continue;
+        
+        elID = el.id.substring(6);
+        if (elID in Strings.ABOUT)
+            el.innerHTML = Strings.ABOUT[elID];
+    }
 };
 
 Main.DKBAtlasInput_Click = function(event) {
@@ -164,18 +198,9 @@ Main.FntAtlasInput_Change = function(event) {
         
         HangulAtlasEditor.ClearFntAtlasTexture();
         
-        var fileReader;
-        
-        for (var file of pngFiles) {
-            
-            fileReader = new FileReader();
-            fileReader.file = file;
-            fileReader.addEventListener('load', this.FntAtlasInput_ImageLoad.bind(this));
-            
-            fileReader.readAsDataURL(file);
-        }
         
         fileReader = new FileReader();
+        fileReader.PngFiles = pngFiles;
         fileReader.addEventListener('load', this.FntAtlasInput_DataLoad.bind(this));
         
         fileReader.readAsText(fntFile);
@@ -183,6 +208,54 @@ Main.FntAtlasInput_Change = function(event) {
     } else {
         
         alert(Strings.NOT_SUPPORTED_BROWSER);
+    }
+};
+
+Main.FntAtlasInput_DataLoad = function(e) {
+    
+    if (!(e.currentTarget instanceof FileReader))
+        return;
+    
+    HangulAtlasEditor.LoadFntXml(e.currentTarget.result);
+    
+    var validFiles = [];
+    
+    if (HangulAtlasEditor.FntData) {
+        
+        var isValid = false;
+        var index = 0;
+        
+        for (var page of HangulAtlasEditor.FntData.pages) {
+            
+            isValid = false;
+            
+            for (var file of e.currentTarget.PngFiles) {
+                
+                if (file.name === page) {
+                    
+                    isValid = true;
+                    break;
+                }
+            }
+            
+            validFiles[index++] = isValid;
+        }
+        
+        if (validFiles.indexOf(false) !== -1) {
+            
+            alert(Strings.NOT_VALID_FNT);
+            return;
+        }
+        
+        var fileReader;
+        for (var file of e.currentTarget.PngFiles) {
+            
+            fileReader = new FileReader();
+            fileReader.file = file;
+            fileReader.addEventListener('load', this.FntAtlasInput_ImageLoad.bind(this));
+            
+            fileReader.readAsDataURL(file);
+        }
     }
 };
 
@@ -195,18 +268,8 @@ Main.FntAtlasInput_ImageLoad = function(e) {
         image.addEventListener('load', Main.FntAtlasInput_ImageLoad.bind(this));
         image.src = e.currentTarget.result;
         
-    } else {
-        
+    } else
         HangulAtlasEditor.AddFntAtlasTexture(e.currentTarget.file.name, e.currentTarget);
-    }
-};
-
-Main.FntAtlasInput_DataLoad = function(e) {
-    
-    if (!(e.currentTarget instanceof FileReader))
-        return;
-    
-    HangulAtlasEditor.LoadFntXml(e.currentTarget.result);
 };
 
 Main.GenerateButton_Click = function(e) {
@@ -242,8 +305,11 @@ Main.GenerateButton_Click = function(e) {
     this.ProgressLabel.innerHTML = Strings.GENERATE_BEGIN;
     this.ProgressLabel_Pages = 0;
     this.GenerateViewContainer.style.display = '';
-    this.PIXIViewTextInput.style.display = 'none';
+    this.PIXIViewTextInput.style.display = '';
     document.body.setAttribute('pending', '');
+    
+    if (this.PIXIView)
+        this.PIXIView.Dispose();
 };
 
 Main.GenerateFnt_Progress = function(percent, charCode) {
@@ -273,9 +339,6 @@ Main.GenerateFnt_Done = function(fileName, xmlString, pageDataList) {
     
     this.FntOutput.innerText = xmlString;
     this.RenderingPreviewContainer.appendChild(this.FntOutputContainer);
-    
-    if (this.PIXIView)
-        this.PIXIView.Dispose();
     
     this.PIXIView = new PIXIView();
     
@@ -347,7 +410,8 @@ Main.DownloadZipButton_Click = function(e) {
 Main.PIXIView_Load = function() {
     
     this.GenerateViewContainer.style.display = 'none';
-    this.PIXIViewTextInput.style.display = '';
+    this.PIXIViewTextInput.style.display = 'block';
+    this.PIXIViewTextInputCache = this.PIXIViewTextInput.value || this.PIXIViewTextInputCache;
     this.PIXIViewTextInput.value = this.PIXIViewTextInputCache;
     
     this.PIXIView.SetText(this.PIXIViewTextInputCache);
@@ -363,6 +427,48 @@ Main.PIXIViewTextInput_Change = function(e) {
     
     if (this.PIXIView)
         this.PIXIView.SetText(this.PIXIViewTextInput.value);
+};
+
+Main.InitializeView = function() {
+    
+    this.Views = [];
+    this.ViewContainer = document.getElementById("View");
+    
+    for (var view of this.ViewContainer.children)
+        this.Views.push(view.id);
+    
+    var headers = document.getElementById("Header");
+    var el;
+    var attr;
+    for (var view of this.Views) {
+        
+        el = document.createElement("span");
+        el.setAttribute('view', view);
+        el.classList.add('item');
+        
+        if (view in Strings.HEADERS)
+            el.innerText = Strings.HEADERS[view];
+        
+        el.addEventListener('click', this.Header_Click.bind(this));
+        
+        headers.appendChild(el);
+    }
+    
+    headers.children[1].click();
+};
+
+Main.Header_Click = function(e) {
+    
+    var target = e.currentTarget;
+    var view = target.getAttribute('view');
+    
+    this.ViewContainer.setAttribute('view', view);
+    
+    if (this.CurrentViewItem)
+        this.CurrentViewItem.classList.remove('active');
+    
+    target.classList.add('active');
+    this.CurrentViewItem = target;
 };
 
 window.addEventListener('load', Main.bind(Main) );

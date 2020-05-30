@@ -1,6 +1,6 @@
 function PIXIView() {
     
-    this.Instance = new PIXI.Application({ width: 1280, height: 720, transparent: true });
+    this.Instance = new PIXI.Application({ forceCanvas: true, width: 1280, height: 720, transparent: true });
     this.Element  = this.Instance.view;
     this.Stage    = this.Instance.stage;
     this.Loader = this.Instance.loader;
@@ -10,7 +10,7 @@ function PIXIView() {
 
 PIXIView.prototype.AddAssetToLoader = function(name, base64) {
     
-    this.Loader.add(name + Date.now(), base64);
+    this.Loader.add(name + "?" + Date.now(), base64);
 };
 
 PIXIView.prototype.InitializeText = function(font, load) {

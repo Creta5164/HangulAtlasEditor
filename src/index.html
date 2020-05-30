@@ -5,55 +5,74 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title></title>
         
-        <link rel="stylesheet" href="./css/main.css"/>
+        <link rel='stylesheet' type='text/css' href="https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-kr.css"/>
+        <link rel='stylesheet' type='text/css' href="./css/main.css"/>
     </head>
-    <body style="background:black; color:white"
-          pending>
+    <body pending>
         
-        <div class="header">
-            
+        <div id="Header">
+            <span class="vert"></span>
         </div>
         
-        <div class="view" view="View_Main">
+        <div id="View" view="Main">
             
-            <div id="View_Main">
+            <div id="Main">
                 
-                <p>
-                    <input type="file" id="DKBAtlasInput" accept=".png"/>
-                    <input type="file" id="FntAtlasInput" accept=".png, .fnt" multiple/>
-                </p>
-                
-                <p>
-                    <span id="TextureSizeLabel"></span>
+                <div class="options">
                     
-                    <select id="TextureDemensionInput">
-                        <option value="0">256</option>
-                        <option value="1">512</option>
-                        <option value="2" selected>1024</option>
-                        <option value="3">2048</option>
-                        <option value="4">4096</option>
-                        <option value="5">8192</option>
-                    </select>
-                </p>
-                
-                <div>
-                    <p>
-                        <span id="OffsetsLabel"></span>
+                    <p class="input">
+                        <span class="label" id="DKBTextureLabel"></span>
+                        <input type="file" id="DKBAtlasInput" accept=".png"/>
+                    </p>
+                    <p id="DKBTextureHelp" class="help"></p>
+                    
+                    <p class="input">
+                        <span class="label" id="FntAtlasLabel"></span>
+                        <input type="file" id="FntAtlasInput" accept=".png, .fnt" multiple/>
+                    </p>
+                    <p id="FntAtlasHelp" class="help"></p>
+                    
+                    <p class="input">
+                        <span class="label" id="TextureSizeLabel"></span>
                         
+                        <select id="TextureDemensionInput">
+                            <option value="0">256</option>
+                            <option value="1">512</option>
+                            <option value="2" selected>1024</option>
+                            <option value="3">2048</option>
+                            <option value="4">4096</option>
+                            <option value="5">8192</option>
+                        </select>
+                    </p>
+                    <p id="TextureSizeHelp" class="help"></p>
+                    
+                    <p class="input">
+                        <span class="label" id="OffsetsLabel"></span>
+                        
+                        <span>X : </span>
                         <input type="number" id="OffsetXInput"/>
+                        <br>
+                        <span class="label"></span>
+                        <span>Y : </span>
                         <input type="number" id="OffsetYInput"/>
                     </p>
+                    <p id="OffsetsHelp" class="help"></p>
                     
-                    <p>
-                        <span id="AdvanceLabel"></span>
+                    <p class="input">
+                        <span class="label" id="AdvanceLabel"></span>
                         <input type="number" id="AdvanceXInput"/>
                     </p>
+                    <p id="AdvanceHelp" class="help"></p>
+                    
+                    <p>
+                        <span class="label" id="AdvanceLabel"></span>
+                        <button id="GenerateButton"></button>
+                        <button id="DownloadZipButton"></button>
+                    </p>
+                    
+                    <p id="ProgressLabel"></p>
+                    
                 </div>
-                
-                <button id="GenerateButton"></button>
-                <button id="DownloadZipButton"></button>
-                
-                <p id="ProgressLabel"></p>
                 
                 <div id="GenerateViewContainer" class="horizontal">
                     
@@ -78,7 +97,21 @@
                 
             </div>
             
-            <div id="View_About">
+            <div id="About">
+                
+                <h1 id="About_Title"></h1>
+                
+                <div id="About_Description"></div>
+                
+                <h1 id="About_ReasonTitle"></h1>
+                
+                <div id="About_Reason"></div>
+                
+                <hr/>
+                
+                <h1 id="About_DepedenciesTitle"></h1>
+                
+                <div id="About_Depedencies"></div>
                 
             </div>
             
@@ -87,27 +120,26 @@
         <div class="footer">
             
             <p>
-                Created by Creta Park.
+                Created by <a target="_blank" href="https://creft.me/cretapark">Creta Park</a>
             </p>
             <p>
                 This project is inspired by
-                <a href="https://github.com/TandyRum1024">zik (TandyRum1024)</a>'s
-                <a href="https://github.com/TandyRum1024/hangul-johab-render-gms">project.</a>
+                <a target="_blank" href="https://github.com/TandyRum1024/hangul-johab-render-gms">zik (TandyRum1024)'s project</a>
             </p>
             <p>
-                Source code licensed under MIT license.
+                Source code licensed under MIT license. <a target="_blank" href="https://github.com/Creta5164/HangulAtlasEditor">GitHub page</a>
             </p>
         </div>
         
         <!-- dependencies -->
         <script>const exports = {};</script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.2.4/pixi.min.js"></script>
-        <script src="https://wzrd.in/bundle/parse-bmfont-xml@1.1.4"></script>
+        <script>
+            require=function e(r,t,n){function a(o,s){if(!t[o]){if(!r[o]){var f="function"==typeof require&&require;if(!s&&f)return f(o,!0);if(i)return i(o,!0);var c=new Error("Cannot find module '"+o+"'");throw c.code="MODULE_NOT_FOUND",c}var l=t[o]={exports:{}};r[o][0].call(l.exports,(function(e){return a(r[o][1][e]||e)}),l,l.exports,e,r,t,n)}return t[o].exports}for(var i="function"==typeof require&&require,o=0;o<n.length;o++)a(n[o]);return a}({1:[function(e,r,t){r.exports=function(e){for(var r in"chasrset"in e&&(e.charset=e.chasrset,delete e.chasrset),e)"face"!==r&&"charset"!==r&&(e[r]="padding"===r||"spacing"===r?e[r].split(",").map((function(e){return parseInt(e,10)})):parseInt(e[r],10));return e}},{}],2:[function(e,r,t){r.exports=void 0!==self.DOMParser?function(e){return(new self.DOMParser).parseFromString(e,"application/xml")}:void 0!==self.ActiveXObject&&new self.ActiveXObject("Microsoft.XMLDOM")?function(e){var r=new self.ActiveXObject("Microsoft.XMLDOM");return r.async="false",r.loadXML(e),r}:function(e){var r=document.createElement("div");return r.innerHTML=e,r}},{}],"parse-bmfont-xml":[function(e,r,t){var n=e("./parse-attribs"),a=e("xml-parse-from-string"),i={scaleh:"scaleH",scalew:"scaleW",stretchh:"stretchH",lineheight:"lineHeight",alphachnl:"alphaChnl",redchnl:"redChnl",greenchnl:"greenChnl",bluechnl:"blueChnl"};function o(e){return function(e){for(var r=[],t=0;t<e.attributes.length;t++)r.push(e.attributes[t]);return r}(e).reduce((function(e,r){var t;return e[(t=r.nodeName,i[t.toLowerCase()]||t)]=r.nodeValue,e}),{})}r.exports=function(e){e=e.toString();var r=a(e),t={pages:[],chars:[],kernings:[]};["info","common"].forEach((function(e){var a=r.getElementsByTagName(e)[0];a&&(t[e]=n(o(a)))}));var i=r.getElementsByTagName("pages")[0];if(!i)throw new Error("malformed file -- no <pages> element");for(var s=i.getElementsByTagName("page"),f=0;f<s.length;f++){var c=s[f],l=parseInt(c.getAttribute("id"),10),u=c.getAttribute("file");if(isNaN(l))throw new Error('malformed file -- page "id" attribute is NaN');if(!u)throw new Error('malformed file -- needs page "file" attribute');t.pages[parseInt(l,10)]=u}return["chars","kernings"].forEach((function(e){var a=r.getElementsByTagName(e)[0];if(a)for(var i=e.substring(0,e.length-1),s=a.getElementsByTagName(i),f=0;f<s.length;f++){var c=s[f];t[e].push(n(o(c)))}})),t}},{"./parse-attribs":1,"xml-parse-from-string":2}]},{},[]);
+        </script>
         <script src="https://cdn.jsdelivr.net/g/filesaver.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/byte-base64"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.3.0/jszip.min.js"></script>
-        <!-- <script src="https://wzrd.in/bundle/xml-js@1.6.11"></script> -->
-        <!-- <script src="https://wzrd.in/bundle/bin-pack@1.0.2"></script> -->
         
         <!-- sources -->
         <script src="./js/binpack.js"></script>

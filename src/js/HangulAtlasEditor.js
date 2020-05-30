@@ -195,7 +195,21 @@ HangulAtlasEditor.AddFntAtlasTexture = function(pageKey, image) {
     this.FntAtlasTextures = this.FntAtlasTextures || {};
     this.FntAtlasTextures[pageKey] = image;
     
+    if (!this.FntData) {
+        
+        this.IsFntAtlasTexturesLoaded = false;
+        return;
+    }
+    
+    for (var key of this.FntData.pages)
+    if (!(key in this.FntAtlasTextures)) {
+        
+        this.IsFntAtlasTexturesLoaded = false;
+        return;
+    }
+    
     this.IsFntAtlasTexturesLoaded = true;
+    
 };
 
 HangulAtlasEditor.LoadFntXml = function(data) {
@@ -308,12 +322,6 @@ HangulAtlasEditor.GetDKBLine = function(bulset, glyphPart) {
         if (charset[index].indexOf(glyphPart) !== -1) {
             
             index += bulset.LINE_OFFSET;
-            
-            if (bulset === this.DKB_TABLE.ALPHABET) {
-                
-                console.log(glyphPart);
-                console.log(index);
-            }
             break;
         }
     }
@@ -390,8 +398,8 @@ HangulAtlasEditor.GenerateFnt = function({
         data.pages    = this.FntData.pages;
         
         //padding order is clockwise from top. [up, right, down, left]
-        data.fullSpaceWidth  = data.info.padding[1] + data.info.padding[3] + data.info.spacing[0] - (data.info.spacing[0] % 2);
-        data.fullSpaceHeight = data.info.padding[0] + data.info.padding[2] + data.info.spacing[1] - (data.info.spacing[1] % 2);
+        data.fullSpaceWidth  = data.info.padding[1] + data.info.padding[3] + data.info.spacing[0] + (data.info.spacing[0] % 2);
+        data.fullSpaceHeight = data.info.padding[0] + data.info.padding[2] + data.info.spacing[1] + (data.info.spacing[1] % 2);
         
         data.charResult = this.CopyObjectRecursive(data.chars);
         data.pageResult = [];
@@ -543,6 +551,14 @@ HangulAtlasEditor.DrawFntGlyph = function(data, index) {
                     data.charInfoResult.y      = data.insertedRect.y + data.info.spacing[1] + (data.info.spacing[1] % 2) + data.info.padding[0];
                     data.charInfoResult.width  = drawInfo.width;
                     data.charInfoResult.height = drawInfo.height;
+                    
+                    if (data.charInfoResult.x + data.charInfoResult.width > data.sizeLevel ||
+                        data.charInfoResult.y + data.charInfoResult.height > data.sizeLevel) {
+                        
+                        console.log(data);
+                        return;
+                    }
+                    
                     data.charInfoResult.page   = data.currentPageIndex;
                     
                     if (data.isKoreanFontData) {

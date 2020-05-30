@@ -1,3 +1,18 @@
+body {
+    
+    margin: 0;
+    
+    display: flex;
+    flex-direction: column;
+    
+    font-family: 'Spoqa Han Sans';
+    
+    background-image: url("../img/background.png");
+    background-repeat: repeat;
+    
+    color: white;
+}
+
 body[pending] input,
 body[pending] select,
 body[pending] button {
@@ -11,6 +26,146 @@ body[pending] button {
     display: flex;
     
     height: auto;
+}
+
+span.label {
+    
+    display: inline-block;
+    text-align: right;
+    width: 300px;
+    
+    font-weight: bold;
+}
+
+p.input {
+    
+    margin-bottom: 5px;
+}
+
+p.help {
+    font-size: 11pt;
+    margin-top: 5px;
+    margin-left: 305px;
+    margin-bottom: 25px;
+}
+
+a {
+    
+    display: inline-block;
+    
+    padding: 0 4px;
+    margin: 2px;
+    border-radius: 3px;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: rgb(0, 60, 255);
+    
+    text-decoration: none;
+    
+    background-color: rgb(50, 115, 255);
+    color: white;
+    transition: ease-out background-color 0.25s;
+}
+
+a:hover {
+    
+    background-color: rgb(121, 163, 255);
+}
+
+a:visited {
+    
+    color: white;
+}
+
+li {
+    
+    margin-bottom: 20px;
+}
+
+#Header {
+    
+    background-color: rgb(61, 61, 61);
+    height: 50px;
+    overflow: hidden;
+}
+
+#Header>span {
+    
+    display: inline-block;
+}
+
+#Header>.vert {
+    
+    height: inherit;
+    vertical-align: middle;
+}
+
+#Header>.item {
+    
+    cursor: pointer;
+    
+    font-weight: bold;
+    font-size: 14pt;
+    vertical-align: middle;
+    
+    line-height: 0;
+    padding: 25px 20px;
+    
+    transition: ease-out background-color 0.25s;
+}
+
+#Header>.item:hover,
+#Header>.item.active {
+    
+    background-color: rgb(100, 100, 100);
+}
+
+#View {
+    
+    margin: 10px;
+    
+    flex-basis: calc(-50px + 100vh - 20px - 180px);
+}
+
+#View>* {
+    
+    display: none;
+}
+
+#View[view="Main"]>#Main {
+    
+    display: block;
+    width: 1280px;
+    max-width: 95vw;
+    margin: 0 auto;
+}
+
+#Main>.options {
+    
+    width: 960px;
+    max-width: 95vw;
+    margin: 0 auto;
+}
+
+#View[view="About"]>#About {
+    
+    display: block;
+    width: 720px;
+    max-width: 95vw;
+    margin: 0 auto;
+}
+
+.footer {
+    
+    height: 100px;
+    background-color: rgb(41, 41, 41);
+    
+    padding: 40px 50px;
+}
+
+.footer>p {
+    
+    margin: 0;
 }
 
 #RenderingPreviewContainer {
@@ -49,4 +204,5 @@ body[pending] button {
 #PIXIViewContainer>p>textarea {
     
     width: 512px;
+    display: none;
 }

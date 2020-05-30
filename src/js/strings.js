@@ -86,7 +86,7 @@ const Strings = {
     },
     
     UI: {
-        TITLE: "한글 조합형 아틀라스 에디터",
+        TITLE: "한글 도해집 병합 도구",
         
         DKBFILE: "도깨비한글 스프라이트 (png)",
         FNTFILE: "폰트 아틀라스 파일들 (fnt + png)",

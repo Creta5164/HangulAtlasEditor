@@ -7,7 +7,11 @@
 `*.fnt` 폰트 아틀라스에서 한글 문자들을 찾아내어
 한글만 도깨비한글 조합식 그래픽으로 모두 바꿔 합치는 도구입니다.
 
-## [사용하기](https://creta5164.github.io/HangulAtlasEditor)
+### [사용하기](https://creta5164.github.io/HangulAtlasEditor)
+
+<a href="https://www.buymeacoffee.com/CretaPark" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" width="120" height="26">
+</a>
 
 ## 만들게 된 이유
 
@@ -27,6 +31,8 @@
 그런 바램으로 폰트를 직접 써볼 수 있도록 미리보기 기능까지 열심히 만들었죠.
 
 많은 분들이 이쁜 폰트를 만들 수 있었으면 좋겠네요...
+
+
 
 ## 사용한 것들
 ### - [pixi.js (5.2.4)](https://www.pixijs.com)

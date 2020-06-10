@@ -104,6 +104,7 @@ const Strings = {
                 각 칸에 어떤 식으로 글자를 그려야 하는 지 정리된 테이블은 아래의 링크에서 확인할 수 있습니다.<br>
                 <a target="_blank" href="./img/2x8x4x4.png">조합 가이드가 적힌 테이블</a><br>
                 <a target="_blank" href="./img/2x8x4x4 blank.png">그려야 하는 글자만 적힌 테이블</a><br>
+                <a target="_blank" href="./img/Waffleche.png">도깨비한글 스프라이트 샘플</a><br>
                 완성된 스프라이트 이미지의 크기는<strong>가로로 30칸, 세로로 18칸</strong>으로 정확히 나눌 수 있어야 합니다.`,
             FNTFILE:
                `사용하고 싶은 글자(한글, 영어, 특수문자 등)를 포함한 폰트 아틀라스 파일을 올려주세요.<br>

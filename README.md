@@ -7,6 +7,7 @@
 `*.fnt` 폰트 아틀라스에서 한글 문자들을 찾아내어
 한글만 도깨비한글 조합식 그래픽으로 모두 바꿔 합치는 도구입니다.
 
+### [쓰는 법](https://blog.naver.com/hd3306/221985699526)  
 ### [사용하기](https://creta5164.github.io/HangulAtlasEditor)
 
 <a href="https://www.buymeacoffee.com/CretaPark" target="_blank">

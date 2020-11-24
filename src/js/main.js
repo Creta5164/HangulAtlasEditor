@@ -18,6 +18,12 @@ Main.Initialize = function() {
     
     this.TextureDemensionInput = document.getElementById("TextureDemensionInput");
     
+    this.IncludeMinimumKoreanCharactersInput = document.getElementById("IncludeMinimumKoreanCharactersInput");
+    this.IncludeMinimumKoreanCharactersInput.addEventListener("change", this.IncludeMinimumKoreanCharactersInput_Change.bind(this));
+    this.IncludeMinimumKoreanCharacters = true;
+    
+    this.AdditionalKoreanCharactersInput = document.getElementById("AdditionalKoreanCharactersInput");
+    
     this.OffsetXInput = document.getElementById("OffsetXInput");
     this.OffsetYInput = document.getElementById("OffsetYInput");
     
@@ -72,6 +78,12 @@ Main.SetUIStrings = function(strings) {
     this.TextureSizeLabel = document.getElementById("TextureSizeLabel");
     this.TextureSizeHelp  = document.getElementById("TextureSizeHelp");
     
+    this.IncludeMinimumKoreanCharactersLabel = document.getElementById("IncludeMinimumKoreanCharactersLabel");
+    this.IncludeMinimumKoreanCharactersHelp = document.getElementById("IncludeMinimumKoreanCharactersHelp");
+    
+    this.AdditionalKoreanCharactersLabel = document.getElementById("AdditionalKoreanCharactersLabel");
+    this.AdditionalKoreanCharactersHelp  = document.getElementById("AdditionalKoreanCharactersHelp");
+    
     this.OffsetsLabel = document.getElementById("OffsetsLabel");
     this.OffsetsHelp  = document.getElementById("OffsetsHelp");
     
@@ -86,6 +98,12 @@ Main.SetUIStrings = function(strings) {
     
     this.TextureSizeLabel.innerText = strings.TEXTURE_SIZE;
     this.TextureSizeHelp.innerHTML  = strings.HELP.TEXTURE_SIZE;
+    
+    this.IncludeMinimumKoreanCharactersLabel.innerText = strings.INCLUDE_MINIMUM_KOREAN_CHARACTERS;
+    this.IncludeMinimumKoreanCharactersHelp.innerHTML  = strings.HELP.INCLUDE_MINIMUM_KOREAN_CHARACTERS;
+    
+    this.AdditionalKoreanCharactersLabel.innerText = strings.ADDITIONAL_KOREAN_CHARACTERS;
+    this.AdditionalKoreanCharactersHelp.innerHTML = strings.HELP.ADDITIONAL_KOREAN_CHARACTERS;
     
     this.GenerateButton.innerText    = strings.GENERATE_BUTTON;
     this.DownloadZipButton.innerText = strings.DOWNLOAD_ZIP;
@@ -272,6 +290,11 @@ Main.FntAtlasInput_ImageLoad = function(e) {
         HangulAtlasEditor.AddFntAtlasTexture(e.currentTarget.file.name, e.currentTarget);
 };
 
+Main.IncludeMinimumKoreanCharactersInput_Change = function(e) {
+    
+    this.IncludeMinimumKoreanCharacters = e.currentTarget.checked;
+};
+
 Main.GenerateButton_Click = function(e) {
     
     if (this.RenderingPreviewContainer.contains(this.FntOutputContainer))
@@ -295,6 +318,8 @@ Main.GenerateButton_Click = function(e) {
             fileName:    this.FileName,
             offset:      offset,
             xAdvance:    xAdvance,
+            includeMinimumKoreanCharacters: this.IncludeMinimumKoreanCharacters,
+            additionalKoreanCharacters:     this.AdditionalKoreanCharactersInput.value,
             progress:    this.GenerateFnt_Progress.bind(this),
             pageCreated: this.GenerateFnt_PageCreated.bind(this),
             done:        this.GenerateFnt_Done.bind(this),

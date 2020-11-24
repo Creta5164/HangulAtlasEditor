@@ -35,6 +35,8 @@ span.label {
     width: 300px;
     
     font-weight: bold;
+    
+    vertical-align: top;
 }
 
 p.input {

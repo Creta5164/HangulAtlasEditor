@@ -99,6 +99,8 @@ const Strings = {
         FNTFILE: "폰트 아틀라스 파일들 (fnt + png)",
         
         TEXTURE_SIZE: "텍스쳐 크기",
+        INCLUDE_MINIMUM_KOREAN_CHARACTERS: "한글 최소 완성형 추가",
+        ADDITIONAL_KOREAN_CHARACTERS: "포함할 한글 문자",
         OFFSETS: "조합형한글 스프라이트 글자 오프셋",
         ADVANCE: "조합형한글 가로 크기",
         
@@ -124,7 +126,13 @@ const Strings = {
             
             TEXTURE_SIZE:
                 `합쳐질 텍스쳐의 가로, 세로 크기를 지정합니다.`,
-                
+            
+            INCLUDE_MINIMUM_KOREAN_CHARACTERS:
+                `fnt 파일에 한글이 없어도 한글 자모를 포함해 최소 완성형 문자들을 추가합니다.`,
+            
+            ADDITIONAL_KOREAN_CHARACTERS:
+                `fnt에 한글 문자를 직접 써서 추가할 수 있습니다.`,
+            
             OFFSETS: 
                `도깨비한글 스프라이트 글자가 <strong>화면에 그려질 위치에서 얼마나 움직인 후에 그리게 할 지 지정</strong>합니다.<br>
                 이걸 이용해서 폰트의 밑줄 중심점과 도깨비한글 스프라이트에서 왼쪽의 공백을 맞출 수도 있습니다.`,

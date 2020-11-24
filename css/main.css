@@ -15,7 +15,8 @@ body {
 
 body[pending] input,
 body[pending] select,
-body[pending] button {
+body[pending] button,
+body[pending] textarea {
     
     pointer-events: none;
     opacity: 0.5;
@@ -35,6 +36,8 @@ span.label {
     width: 300px;
     
     font-weight: bold;
+    
+    vertical-align: top;
 }
 
 p.input {

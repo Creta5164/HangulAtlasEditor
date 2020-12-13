@@ -83,6 +83,13 @@ const Strings = {
                     ( Waffleche.png )
                 </li>
                 <li>
+                    <a target="_blank" href="https://blog.naver.com/mightybeetle">
+                        백귀구마록체 by MightyBeetle
+                    </a><br>
+                    MightyBeetle님이 정성들여 만드신 한글 도해집 병합 도구용 도깨비한글 스프라이트 조합형 폰트입니다.<br>
+                    ( Paekgwiche.png )
+                </li>
+                <li>
                     <a target="_blank" href="https://spoqa.github.io/spoqa-han-sans">
                         Spoqa Han Sans
                     </a><br>
@@ -113,8 +120,9 @@ const Strings = {
                 각 칸에 어떤 식으로 글자를 그려야 하는 지 정리된 테이블은 아래의 링크에서 확인할 수 있습니다.<br>
                 <a target="_blank" href="./img/2x8x4x4.png">조합 가이드가 적힌 테이블</a><br>
                 <a target="_blank" href="./img/2x8x4x4 blank.png">그려야 하는 글자만 적힌 테이블</a><br>
-                <a target="_blank" href="./img/Waffleche.png">도깨비한글 스프라이트 샘플</a>
-                <span>* 와플체는 <a target="_blank" href="https://github.com/Creta5164/HangulAtlasEditor/blob/master/src/img/LICENSE_Waffleche">SIL Open Font License 1.1</a>을 따릅니다.</span><br>
+                도깨비한글 스프라이트 샘플<br>
+                <a target="_blank" href="./img/Waffleche.png">와플체</a>
+                <a target="_blank" href="./img/Paekgwiche.png">백귀구마록체</a><br>
                 완성된 스프라이트 이미지의 크기는<strong>가로로 30칸, 세로로 18칸</strong>으로 정확히 나눌 수 있어야 합니다.`,
             FNTFILE:
                `사용하고 싶은 글자(한글, 영어, 특수문자 등)를 포함한 폰트 아틀라스 파일을 올려주세요.<br>

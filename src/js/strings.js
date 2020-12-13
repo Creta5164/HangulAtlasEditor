@@ -83,6 +83,13 @@ const Strings = {
                     ( Waffleche.png )
                 </li>
                 <li>
+                    <a target="_blank" href="https://blog.naver.com/mightybeetle">
+                        백귀구마록체 by MightyBeetle
+                    </a><br>
+                    MightyBeetle님이 정성들여 만드신 한글 도해집 병합 도구용 도깨비한글 스프라이트 조합형 폰트입니다.<br>
+                    ( Paekgwiche.png )
+                </li>
+                <li>
                     <a target="_blank" href="https://spoqa.github.io/spoqa-han-sans">
                         Spoqa Han Sans
                     </a><br>
